@@ -69,6 +69,53 @@ class Wit(object):
         resp = req(self.logger, self.access_token, 'GET', '/message', params)
         return resp
 
+    def get_utterances(self,limit=100,version=None):
+        params = {}
+        params['limit'] = limit
+        resp = req(self.logger, self.access_token, 'GET', '/utterances', params)
+        return resp
+    
+    def retrieve_the_list_of_all_the_entities_in_your_app(self):
+        params = {}
+        resp = req(self.logger, self.access_token, 'GET', '/entities', params)
+        return resp
+
+    def retrieve_all_information_about_an_entity(self,entity):
+        params = {}
+        resp = req(self.logger, self.access_token, 'GET', '/entities/'+str(entity), params)
+        return resp
+
+    def update_the_information_of_an_entity(self, entity, roles=[]):
+        params = {}
+        if roles==[]:
+            roles.append(entity)
+        
+        keyword = 'תל אביב'
+        synonyms = ["תא"]
+        keyword_dict = dict({'keyword': keyword, 'synonyms': synonyms})
+
+        headers = {'Content-Type': 'application/json'}
+        data = dict({
+                    'name': entity,
+                    'roles': list(set(roles)),
+                    'lookups': ["free-text", "keywords"],
+                    'keywords': [keyword_dict]
+                    })
+        resp = req(self.logger, self.access_token, 'PUT', '/entities/'+str(entity), params, headers=headers, data=data)
+        return resp
+
+    def add_new_values_to_a_keywords_entity(self,entity,keyword,synonyms = []):
+        import json
+        params = {}
+        headers = {'Content-Type': 'application/json'}
+        synonyms.append(keyword)
+        synonyms = list(set(synonyms))
+        data = dict({'keyword': keyword, 'synonyms': synonyms})
+        # data = json.dumps(data)
+        # print(data)
+        resp = req(self.logger, self.access_token, 'POST', '/entities/'+entity + '/keywords', params=params, headers=headers, data=data)
+        return resp
+
     def speech(self, audio_file, headers=None, verbose=None):
         """ Sends an audio file to the /speech API.
         Uses the streaming feature of requests (see `req`), so opening the file
