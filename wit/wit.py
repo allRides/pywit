@@ -69,6 +69,18 @@ class Wit(object):
         resp = req(self.logger, self.access_token, 'GET', '/message', params)
         return resp
 
+    def create_entity(self, data={}):
+        params = {}
+        headers = {'Content-Type': 'application/json'}
+        resp = req(self.logger, self.access_token, 'POST', '/entities', params=params, headers=headers, data=json.dumps(data))
+        return resp
+        
+    def post_utterances(self,data=""):
+        params = {}
+        headers = {'Content-Type': 'application/json'}
+        resp = req(self.logger, self.access_token, 'POST', '/utterances', params=params,headers=headers, data=data)
+        return resp
+
     def get_utterances(self,limit=100,version=None):
         params = {}
         params['limit'] = limit
@@ -105,7 +117,6 @@ class Wit(object):
         return resp
 
     def add_new_values_to_a_keywords_entity(self,entity,keyword,synonyms = []):
-        import json
         params = {}
         headers = {'Content-Type': 'application/json'}
         synonyms.append(keyword)
@@ -114,6 +125,29 @@ class Wit(object):
         # data = json.dumps(data)
         # print(data)
         resp = req(self.logger, self.access_token, 'POST', '/entities/'+entity + '/keywords', params=params, headers=headers, data=data)
+        return resp
+    ## Intents
+    def create_intent(self, data={}):
+        params = {}
+        headers = {'Content-Type': 'application/json'}
+        resp = req(self.logger, self.access_token, 'POST', '/intents', params=params, headers=headers, data=json.dumps(data))
+        return resp
+
+    ## Manage Apps
+    def get_apps(self,limit=5,version=None):
+        params = {}
+        params['limit'] = limit
+        params['offset'] = 1
+        headers = {'Content-Type': 'application/json'}
+        resp = req(self.logger, self.access_token, 'GET', '/apps', params=params,headers=headers)
+        return resp
+
+    def create_new_app(self,name):
+        params = {}
+        headers = {'Content-Type': 'application/json'}
+        data = {"name": name, "lang": "he", "private": True}
+        data = json.dumps(data)
+        resp = req(self.logger, self.access_token, 'POST', '/apps', params=params,data=data, headers=headers)
         return resp
 
     def speech(self, audio_file, headers=None, verbose=None):
